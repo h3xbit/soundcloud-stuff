@@ -61,7 +61,7 @@ class User:
 class Track:
     def __init__(self,permalink):
         self.track = client.get("/resolve",url=permalink)
-    def printSummary(self):
+    def printSummary(self,detailed):
         print "\n===============TRACK================="
         #followings = self.user.followings_count
         #followers = self.user.followers_count
@@ -69,10 +69,14 @@ class Track:
         
        #followingsPercent = int(followings/total*100)
        # followersPercent = int(followers/total*100)
-        
-        print "Title: ",self.track.title
-        print "Url  : ",self.track.permalink_url
-        print "Plays: ",self.track.playback_count
+        print "Artist: ",self.track.user["username"] 
+        print "Title : ",self.track.title
+        print "Plays : ",self.track.playback_count
+        print "Faves : ",self.track.favoritings_count
+        if(detailed):
+            print "Url   : ",self.track.permalink_url
+            print "Date of creation: ",self.track.created_at
+            
         #print "followings:followers :",followingsPercent,":",followersPercent
       #  print "Following            :",followings
       #  print "Followers            :",followers
@@ -81,12 +85,15 @@ class Track:
         
 unames = ["c0zmic","skrillex","nero","seamlessr","subsoundproductions","drumstep"]
 
-#for uname in unames:
-#    user = User(uname)
-#    user.printSummary()
 
-user = User(unames[0])
-user.printSummary()
-#firstTrack = user.getFirstTrack()
-#firstTrack.printSummary()
+    
 #print("tracks: ",tracks)
+
+def printFirstTracks(unames):
+    for uname in unames:
+        user = User(uname)
+        #user.printSummary()
+        firstTrack = user.getFirstTrack()
+        firstTrack.printSummary(True)    
+
+#def genre
