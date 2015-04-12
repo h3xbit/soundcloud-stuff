@@ -1,4 +1,5 @@
 import soundcloud
+import pickle 
 
 client = soundcloud.Client(client_id=open("client-key-in-here","r").read())
 
@@ -23,11 +24,14 @@ class User:
         print "Tracks    :",self.user.track_count
         #print "======================================"
         
+    #endPoint is for eg likes or tracks 
+    #see sub references https://developers.soundcloud.com/docs/api/reference#users
+    
     def getFullList(self,endPoint):
         page_size = 200
         tracks = []
         
-        endPointFull = "/users/"+str(self.user.id)+endPoint
+        endPointFull = "/users/"+str(self.user.id)+"/"+endPoint
         offset = 0
         pageNumber = 0
         
@@ -49,7 +53,7 @@ class User:
                 break
 
         return tracks
-
+    
     def printGenreStats(self):
         print(len(self.getLikes()))
         
@@ -76,6 +80,8 @@ class Track:
         if(detailed):
             print "Url   : ",self.track.permalink_url
             print "Date of creation: ",self.track.created_at
+    def getGenre():
+        return self.track.genre
             
         #print "followings:followers :",followingsPercent,":",followersPercent
       #  print "Following            :",followings
@@ -96,4 +102,34 @@ def printFirstTracks(unames):
         firstTrack = user.getFirstTrack()
         firstTrack.printSummary(True)    
 
-#def genre
+def printGenrePercentages(trackList):
+    genres = {}
+    for track in trackList:
+        cGenre = track["genre"].lower()
+        if cGenre in genres:
+            genres[cGenre]+=1
+        else:
+            genres[cGenre]=1
+        #total += 1
+   # total = 0
+   #sort by count order
+   # genres = (k,v) for v,k in sorted([(v,k) for k,v in genres.items()])
+    
+    for genre in genres.keys():
+      #  print genre,"\t",genres[genre],"\t",(genres[genre]/len(trackList)*100),"%"
+        print "%-25s Count: %4d Percent: %2d " % (genre,genres[genre],(float(genres[genre])/float(len(trackList))*100))
+
+def save_object(obj, filename):
+    with open(filename, 'wb') as output:
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
+#user = User("c0zmic")
+
+userLikes = user.getFullList("favorites")
+#userLikes = user.getFullList("tracks")
+
+
+printGenrePercentages(userLikes)
+#save_object(userLikes,"userLikes.pkl")
+print(len(userLikes))
+#
