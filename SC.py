@@ -3,6 +3,9 @@ import pickle
 
 client = soundcloud.Client(client_id=open("client-key-in-here","r").read())
 
+def getRatio(a,b):
+        return float(b)/float(a)*100
+
 class User:
     def __init__(self,permalink):
        self.user = client.get("/resolve",url="http://www.soundcloud.com/"+permalink)
@@ -65,6 +68,8 @@ class User:
 class Track:
     def __init__(self,permalink):
         self.track = client.get("/resolve",url=permalink)
+    #b is smaller num    
+    
     def printSummary(self,detailed):
         print "\n===============TRACK================="
         #followings = self.user.followings_count
@@ -73,13 +78,16 @@ class Track:
         
        #followingsPercent = int(followings/total*100)
        # followersPercent = int(followers/total*100)
-        print "Artist: ",self.track.user["username"] 
+        print "Artist: ",self.track.user["username"].encode('utf-8').strip()
         print "Title : ",self.track.title
         print "Plays : ",self.track.playback_count
         print "Faves : ",self.track.favoritings_count
         if(detailed):
             print "Url   : ",self.track.permalink_url
             print "Date of creation: ",self.track.created_at
+            print "Like % of Plays    :", getRatio(self.track.playback_count,self.track.favoritings_count)
+            print "Comment % of Plays :", getRatio(self.track.playback_count,self.track.comment_count)
+            
     def getGenre():
         return self.track.genre
             
@@ -125,11 +133,15 @@ def save_object(obj, filename):
 
 #user = User("c0zmic")
 
-userLikes = user.getFullList("favorites")
+#userLikes = user.getFullList("favorites")
 #userLikes = user.getFullList("tracks")
 
 
-printGenrePercentages(userLikes)
+#printGenrePercentages(userLikes)
 #save_object(userLikes,"userLikes.pkl")
-print(len(userLikes))
+#print(len(userLikes))
 #
+trackUrls = open("playlist","r").read().split("\n")
+for trackUrl in trackUrls:
+    track = Track(trackUrl)
+    track.printSummary(True)
